@@ -1,14 +1,14 @@
-import { useLocalSearchParams } from "expo-router";
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
-
-import { useState, useEffect, useContext } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
+import ActionButtons from "@/components/ActionButtons";
+import InputBar from "@/components/InputBar";
+import ThemeToggleButton from "@/components/ThemeToggleButton";
 import { ThemeContext } from "@/context/ThemeContext";
-import { StatusBar } from "expo-status-bar";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
-import { Octicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useContext, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditScreen() {
     const { id } = useLocalSearchParams()
@@ -21,12 +21,10 @@ export default function EditScreen() {
     })
 
     useEffect(() => {
-
         const fetchData = async (id) => {
             try {
                 const jsonValue = await AsyncStorage.getItem("TodoApp")
                 const storageTodos = jsonValue != null ? JSON.parse(jsonValue) : null;
-
                 if (storageTodos && storageTodos.length) {
                     const myTodo = storageTodos.find(todo => todo.id.toString() === id)
                     setTodo(myTodo)
@@ -35,7 +33,6 @@ export default function EditScreen() {
                 console.error(e)
             }
         }
-
         fetchData(id)
     }, [])
 
@@ -50,15 +47,13 @@ export default function EditScreen() {
             const savedTodo = { ...todo, title: todo.title }
             const jsonValue = await AsyncStorage.getItem('TodoApp')
             const storageTodos = jsonValue != null ? JSON.parse(jsonValue) : null
-
             if (storageTodos && storageTodos.length) {
-                const otherTodos = storageTodos.filter(todo => todo.id !== savedTodo.id)
+                const otherTodos = storageTodos.filter(t => t.id !== savedTodo.id)
                 const allTodos = [...otherTodos, savedTodo]
                 await AsyncStorage.setItem('TodoApp', JSON.stringify(allTodos))
             } else {
                 await AsyncStorage.setItem('TodoApp', JSON.stringify([savedTodo]))
             }
-
             router.push('/')
         } catch (e) {
             console.error(e)
@@ -67,36 +62,40 @@ export default function EditScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    maxLength={30}
-                    placeholder="edit todo"
-                    placeholderTextColor="gray"
-                    value={todo?.title || ''}
-                    onChangeText={(text) => setTodo(prev => ({ ...prev, title: text }))}
-                />
-                <Pressable
-                    onPress={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+            <InputBar
+                value={todo?.title || ''}
+                onChangeText={text => setTodo(prev => ({ ...prev, title: text }))}
+                onPressButton={handleSave}
+                buttonText="Save"
+                placeholder="Edit todo"
+                theme={theme}
+                colorScheme={colorScheme}
+            >
+                <ThemeToggleButton
+                    colorScheme={colorScheme}
+                    setColorScheme={setColorScheme}
+                    theme={theme}
                     style={{ marginLeft: 10 }}
-                >
-                    <Octicons name={colorScheme === 'dark' ? "moon" : "sun"} size={36} color={theme.text} selectable={undefined} style={{ width: 36 }} />
-                </Pressable>
-            </View>
-            <View style={styles.inputContainer}>
-                <Pressable
-                    onPress={handleSave}
-                    style={styles.saveButton}
-                >
-                    <Text style={styles.saveButtonText}>Save</Text>
-                </Pressable>
-                <Pressable
-                    onPress={() => router.push('/')}
-                    style={[styles.saveButton, { backgroundColor: 'red' }]}
-                >
-                    <Text style={[styles.saveButtonText, { color: 'white' }]}>Cancel</Text>
-                </Pressable>
-            </View>
+                />
+            </InputBar>
+            <ActionButtons
+                buttons={[
+                    {
+                        text: 'Save',
+                        onPress: handleSave,
+                        backgroundColor: theme.button,
+                        textColor: colorScheme === 'dark' ? 'black' : 'white',
+                    },
+                    {
+                        text: 'Cancel',
+                        onPress: () => router.push('/'),
+                        backgroundColor: 'red',
+                        textColor: 'white',
+                    },
+                ]}
+                theme={theme}
+                colorScheme={colorScheme}
+            />
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         </SafeAreaView>
     )
@@ -105,41 +104,9 @@ export default function EditScreen() {
 function createStyles(theme, colorScheme) {
     return StyleSheet.create({
         container: {
-            flexh: 1,
+            flex: 1,
             width: '100%',
             backgroundColor: theme.background
-        },
-        inputContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: 10,
-            gap: 6,
-            width: '100%',
-            maxWidth: 1024,
-            marginHorizontal: 'auto',
-            pointerEvents: 'auto',
-
-        },
-        input: {
-            flex: 1,
-            borderColor: 'gray',
-            borderWidth: 1,
-            borderRadius: 5,
-            padding: 10,
-            marginRight: 10,
-            fontSize: 18,
-            fontFamily: 'Inter_500Medium',
-            minWidth: 0,
-            color: theme.text
-        },
-        saveButton: {
-            backgroundColor: theme.button,
-            borderRadius: 5,
-            padding: 10
-        },
-        saveButtonText: {
-            fontSize: 18,
-            color: colorScheme === 'dark' ? 'black' : 'white'
         }
     })
 }

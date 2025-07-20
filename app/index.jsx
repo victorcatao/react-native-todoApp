@@ -1,17 +1,18 @@
-import { Text, View, TextInput, Pressable, StyleSheet, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useContext, useEffect } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useContext, useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
-import Animated, { LinearTransition } from 'react-native-reanimated'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { Octicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { data } from "@/data/todos"
+import InputBar from "@/components/InputBar";
+import ThemeToggleButton from "@/components/ThemeToggleButton";
+import { data } from "@/data/todos";
 
 export default function Index() {
 
@@ -104,24 +105,23 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          maxLength={30}
-          placeholder="Add a new todo"
-          placeholderTextColor="gray"
-          value={text}
-          onChangeText={setText}
+      <InputBar
+        value={text}
+        onChangeText={setText}
+        onPressButton={addTodo}
+        buttonText="Add"
+        placeholder="Add a new todo"
+        theme={theme}
+        colorScheme={colorScheme}
+        style={{ marginBottom: 10 }}
+      >
+        <ThemeToggleButton
+          colorScheme={colorScheme}
+          setColorScheme={setColorScheme}
+          theme={theme}
+          style={{ marginLeft: 10 }}
         />
-        <Pressable onPress={addTodo} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
-          style={{ marginLeft: 10 }}>
-          <Octicons name={colorScheme === 'dark' ? "moon" : "sun"} size={36} color={theme.text} selectable={undefined} style={{ width: 36 }} />
-        </Pressable>
-      </View>
+      </InputBar>
 
       <Animated.FlatList
         data={todos}
