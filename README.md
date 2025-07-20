@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+# CrudApp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Arquitetura
 
-## Get started
+- **app/**: Telas e rotas principais (seguindo convenção do Expo Router)
+- **components/**: Componentes reutilizáveis de UI
+- **hooks/**: Hooks customizados (ex: useTodos)
+- **services/**: Serviços de dados (ex: todoService)
+- **context/**: Contextos globais (ex: ThemeContext)
+- **styles/**: Temas e tokens globais
+- **data/**: Dados mockados
 
-1. Install dependencies
+## Hooks Customizados
 
-   ```bash
-   npm install
-   ```
+### useTodos
+Centraliza toda a lógica de manipulação dos todos (buscar, adicionar, editar, remover, persistir). Exemplo de uso:
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```js
+import { useTodos } from '@/hooks/useTodos';
+const { todos, addTodo, toggleTodo, removeTodo, updateTodo, loading } = useTodos();
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Como rodar o projeto
 
-## Learn more
+```sh
+npm install
+npm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Como testar
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- (Opcional) Adicione testes com Jest e Testing Library para hooks e componentes.
 
-## Join the community
+## Temas
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Os temas globais estão em `styles/theme.ts` e podem ser expandidos conforme necessário.

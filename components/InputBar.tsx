@@ -1,4 +1,17 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native';
+
+interface InputBarProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  onPressButton: () => void;
+  buttonText?: string;
+  placeholder?: string;
+  theme: any;
+  colorScheme: string;
+  children?: React.ReactNode;
+  style?: ViewStyle;
+}
 
 export default function InputBar({
   value,
@@ -10,7 +23,7 @@ export default function InputBar({
   colorScheme,
   children,
   style
-}) {
+}: InputBarProps) {
   const styles = createStyles(theme, colorScheme);
   return (
     <View style={[styles.inputContainer, style]}>
@@ -30,7 +43,7 @@ export default function InputBar({
   );
 }
 
-function createStyles(theme, colorScheme) {
+function createStyles(theme: any, colorScheme: string) {
   return StyleSheet.create({
     inputContainer: {
       flexDirection: 'row',

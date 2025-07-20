@@ -1,6 +1,21 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-export default function ActionButtons({ buttons = [], style, theme, colorScheme }) {
+interface ActionButton {
+  text: string;
+  onPress: () => void;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+interface ActionButtonsProps {
+  buttons: ActionButton[];
+  style?: ViewStyle;
+  theme: any;
+  colorScheme: string;
+}
+
+export default function ActionButtons({ buttons = [], style, theme, colorScheme }: ActionButtonsProps) {
   const styles = createStyles(theme, colorScheme);
   return (
     <View style={[styles.container, style]}>
@@ -17,7 +32,7 @@ export default function ActionButtons({ buttons = [], style, theme, colorScheme 
   );
 }
 
-function createStyles(theme, colorScheme) {
+function createStyles(theme: any, colorScheme: string) {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',

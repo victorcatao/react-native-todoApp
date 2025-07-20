@@ -2,69 +2,46 @@ import ActionButtons from "@/components/ActionButtons";
 import InputBar from "@/components/InputBar";
 import ThemeToggleButton from "@/components/ThemeToggleButton";
 import { ThemeContext } from "@/context/ThemeContext";
+import { Todo, useTodos } from "@/hooks/useTodos";
+import { darkTheme, lightTheme } from "@/styles/theme";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditScreen() {
-    const { id } = useLocalSearchParams()
-    const [todo, setTodo] = useState({})
-    const { colorScheme, setColorScheme, theme } = useContext(ThemeContext)
+    const { id } = useLocalSearchParams<{ id: string }>()
+    const { colorScheme, setColorScheme } = useContext(ThemeContext)
+    const theme = colorScheme === 'dark' ? darkTheme : lightTheme
     const router = useRouter()
-
-    const [loaded, error] = useFonts({
-        Inter_500Medium
-    })
+    const [loaded, error] = useFonts({ Inter_500Medium })
+    const styles = createStyles(theme, colorScheme)
+    const { todos, updateTodo, loading } = useTodos()
+    const [title, setTitle] = useState('')
 
     useEffect(() => {
-        const fetchData = async (id) => {
-            try {
-                const jsonValue = await AsyncStorage.getItem("TodoApp")
-                const storageTodos = jsonValue != null ? JSON.parse(jsonValue) : null;
-                if (storageTodos && storageTodos.length) {
-                    const myTodo = storageTodos.find(todo => todo.id.toString() === id)
-                    setTodo(myTodo)
-                }
-            } catch (e) {
-                console.error(e)
-            }
-        }
-        fetchData(id)
-    }, [])
+        const todo = todos.find((t: Todo) => t.id.toString() === id)
+        setTitle(todo?.title || '')
+    }, [todos, id])
 
-    const styles = createStyles(theme, colorScheme)
-
-    if (!loaded && !error) {
-        return null
+    if ((!loaded && !error) || loading) {
+        return <SafeAreaView style={styles.container}><ActivityIndicator size="large" color={theme.text} /></SafeAreaView>
     }
 
     const handleSave = async () => {
-        try {
-            const savedTodo = { ...todo, title: todo.title }
-            const jsonValue = await AsyncStorage.getItem('TodoApp')
-            const storageTodos = jsonValue != null ? JSON.parse(jsonValue) : null
-            if (storageTodos && storageTodos.length) {
-                const otherTodos = storageTodos.filter(t => t.id !== savedTodo.id)
-                const allTodos = [...otherTodos, savedTodo]
-                await AsyncStorage.setItem('TodoApp', JSON.stringify(allTodos))
-            } else {
-                await AsyncStorage.setItem('TodoApp', JSON.stringify([savedTodo]))
-            }
-            router.push('/')
-        } catch (e) {
-            console.error(e)
-        }
+        const todo = todos.find((t: Todo) => t.id.toString() === id)
+        if (!todo) return
+        await updateTodo({ ...todo, title })
+        router.push('/')
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <InputBar
-                value={todo?.title || ''}
-                onChangeText={text => setTodo(prev => ({ ...prev, title: text }))}
+                value={title}
+                onChangeText={setTitle}
                 onPressButton={handleSave}
                 buttonText="Save"
                 placeholder="Edit todo"
@@ -101,7 +78,7 @@ export default function EditScreen() {
     )
 }
 
-function createStyles(theme, colorScheme) {
+function createStyles(theme: typeof lightTheme, colorScheme: string) {
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -109,4 +86,4 @@ function createStyles(theme, colorScheme) {
             backgroundColor: theme.background
         }
     })
-}
+} 

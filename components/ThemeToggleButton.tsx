@@ -1,7 +1,15 @@
 import { Octicons } from '@expo/vector-icons';
-import { Pressable } from 'react-native';
+import React from 'react';
+import { Pressable, ViewStyle } from 'react-native';
 
-export default function ThemeToggleButton({ colorScheme, setColorScheme, theme, style }) {
+interface ThemeToggleButtonProps {
+  colorScheme: string;
+  setColorScheme: (scheme: string) => void;
+  theme: any;
+  style?: ViewStyle;
+}
+
+export default function ThemeToggleButton({ colorScheme, setColorScheme, theme, style }: ThemeToggleButtonProps) {
   return (
     <Pressable
       onPress={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
