@@ -49,10 +49,6 @@ const { todos, addTodo, toggleTodo, removeTodo, updateTodo, loading } = useTodos
 
 Global themes are defined in `styles/theme.ts` and can be extended as needed.
 
-## Testing
-
-> **Note:** Due to React Native 0.73+ and React 19, Jest support is currently limited. Test only pure functions or await future updates for full support.
-
 ## Cleaning
 - Unused images, JS/JSX files, and legacy code have been removed for a clean, maintainable codebase.
 
