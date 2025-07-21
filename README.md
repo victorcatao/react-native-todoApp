@@ -54,4 +54,4 @@ Global themes are defined in `styles/theme.ts` and can be extended as needed.
 
 ---
 
-Feel free to contribute or adapt this structure for your own Expo/React Native projects!
+Feel free to contribute or adapt this structure for your own Expo/React Native projects.
